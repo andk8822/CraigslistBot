@@ -8,7 +8,7 @@ from make_csv import make_csv
 
 
 """Задать параметры поиска на английском"""
-what = 'Barber'  # Вакансия
+what = 'Python'  # Вакансия
 where = 'Calgary'  # Локация
 
 
