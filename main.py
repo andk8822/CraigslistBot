@@ -1,16 +1,26 @@
-# This is a sample Python script.
+# Встроенный импорт
+import os
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Свой импорт
+from make_html import make_html
+from make_txt import make_txt
+from make_csv import make_csv
 
 
-# Press the green button in the gutter to run the script.
+"""Задать параметры поиска на английском"""
+what = 'Barber'  # Вакансия
+where = 'Calgary'  # Локация
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    make_html(what, where)
+    html = os.path.exists('./data/temp.html')
+    if html:
+        make_txt()
+        make_csv(what, where)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+        """Удалить операционные файлы"""
+        os.remove('./data/temp.html')
+        os.remove('./data/temp.txt')
+        print('Таблица с вакансиями готова')
+        print('Временные файлы удалены')
