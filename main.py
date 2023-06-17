@@ -1,7 +1,5 @@
-# Встроенный импорт
 import os
 
-# Свой импорт
 from make_html import make_html
 from make_txt import make_txt
 from make_csv import make_csv
