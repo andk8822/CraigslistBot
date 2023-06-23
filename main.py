@@ -1,24 +1,21 @@
-import os
-
-from make_html import make_html
-from make_txt import make_txt
-from make_csv import make_csv
+from indeed import Run
 
 
-"""Задать параметры поиска на английском"""
-what = 'Python'  # Вакансия
-where = 'Calgary'  # Локация
+def main() -> None:
+    """Создать .csv вакансий с indeed.com по заданным параметрам поиска"""
+
+    """Задать параметры скрапинга"""  # Этому здесь не место
+    what: str = 'Barber'  # Вакансия
+    where: str = 'Calgary'  # Локация
+
+    """Получить .csv с вакансиями"""
+    Run(None, what, where)
+
+    """Удалить операционные файлы"""  # Этому здесь не место
+    # os.remove('./csv/temp.html')
+    # print('Таблица с вакансиями готова')
+    # print('Временные файлы удалены')
 
 
-if __name__ == '__main__':
-    make_html(what, where)
-    html = os.path.exists('./data/temp.html')
-    if html:
-        make_txt()
-        make_csv(what, where)
-
-        """Удалить операционные файлы"""
-        os.remove('./data/temp.html')
-        os.remove('./data/temp.txt')
-        print('Таблица с вакансиями готова')
-        print('Временные файлы удалены')
+if __name__ == "__main__":
+    main()
