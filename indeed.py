@@ -3,7 +3,7 @@
 import csv
 import time
 import tempfile
-import typing
+from typing import Optional, List, IO
 from datetime import datetime
 
 from selenium import webdriver
@@ -14,13 +14,13 @@ from bs4 import BeautifulSoup
 
 
 class Run:
-    def __init__(self, chromedriver_path, what, where):
-        self._chromedriver_path = chromedriver_path
+    def __init__(self, what: str, where: str, chromedriver_path: str) -> None:
         self._what = what
         self._where = where
+        self._chromedriver_path = chromedriver_path
 
         browser = Browser(self._chromedriver_path).browser
-        with tempfile.TemporaryFile(mode='w+') as temp_html:
+        with tempfile.TemporaryFile(mode='a+', encoding='utf-8') as temp_html:
             Scraper(browser, self._what, self._where, temp_html)
             temp_html.seek(0)
             Parser(self._what, self._where, temp_html)
@@ -28,21 +28,19 @@ class Run:
 
 class Browser:
     """Браузер с настройками"""
-    def __init__(self, chromedriver_path: str = None) -> None:
-        """"""
-
-        # Путь к chromedriver.exe
-        if chromedriver_path:
-            self.chromedriver_path = chromedriver_path
-        else:
-            self.chromedriver_path = './chromedriver/'
+    def __init__(self, chromedriver_path: str) -> None:
+        self._chromedriver_path = chromedriver_path
+        # if chromedriver_path:
+        #     self._chromedriver_path = chromedriver_path
+        # else:
+        #     self._chromedriver_path = './chromedriver/'
 
         # Первый этап обхода CloudFlare
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
 
         # Создать браузер с опциями
-        self.browser = webdriver.Chrome(executable_path=self.chromedriver_path, options=options)
+        self.browser = webdriver.Chrome(executable_path=self._chromedriver_path, options=options)
 
         # Второй этап обхода CloudFlare. Удалить маркеры роботизированного ПО из браузера
         self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
@@ -58,14 +56,14 @@ class Browser:
         # Задать неявную задержку
         self.browser.implicitly_wait(5)
 
-    def quit(self):
+    def quit(self) -> None:
         """Закрыть браузер"""
         self.browser.quit()
 
 
 class Scraper:
     """Скрапинг вакансий в .html"""
-    def __init__(self, browser, what: str, where: str, temp_html) -> None:
+    def __init__(self, browser: webdriver, what: str, where: str, temp_html: IO) -> None:
         self._browser = browser
         self._what = what
         self._where = where
@@ -94,7 +92,7 @@ class Scraper:
         where_input.send_keys(self._where + Keys.ENTER)
         time.sleep(1)
 
-    def search_result(self):
+    def search_result(self) -> bool:
         """Проверить результат выдачи"""
         try:  # Работа с блоком "Вакансии"
             total_vacancies = self._browser.find_element(By.CSS_SELECTOR,
@@ -125,8 +123,8 @@ class Scraper:
             if page_counter == 2:
                 try:
                     self._browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
-                except:
-                    pass
+                except NoSuchElementException:
+                    print('Не найден блок с e-mail рассылкой')
 
             # Запись внутреннего HTML-кода объекта в .html файл
             html_block = self._browser.find_element(By.CSS_SELECTOR, '#mosaic-jobResults ul')
@@ -137,23 +135,23 @@ class Scraper:
             # Перейти на следующую страницу
             try:
                 self._browser.find_element(By.CSS_SELECTOR, 'nav[role="navigation"] div:last-child a').click()
-            except:
+            except NoSuchElementException:
                 print(f'Больше страниц нет')
                 break
 
         print('HTML файл готов')
 
-    def write_html(self, html_block: str):
-        """Дозапись html-блока во временный файл"""
+    def write_html(self, html_block: str) -> None:
+        """Запись html-блока во временный файл"""
         self._temp_html.write(html_block)
         self._temp_html.write('\n')
 
 
 class Parser:
     """Парсинг вакансий из .html в .csv"""
-    JOBS_DONE: list = [['#', 'Job title', 'Tag', 'Company', 'Rating', 'Url']]  # Шапка для создания .csv
+    JOBS_DONE: List[list] = [['#', 'Job title', 'Tag', 'Company', 'Rating', 'Url']]  # Шапка для создания .csv
 
-    def __init__(self, what: str, where: str, temp_html) -> None:
+    def __init__(self, what: str, where: str, temp_html: IO) -> None:
         self._what = what
         self._where = where
         self._temp_html = temp_html
@@ -163,7 +161,7 @@ class Parser:
         else:
             print("Временный HTML файл не сформирован")
 
-    def parse(self) -> list:
+    def parse(self) -> List[list]:
         """Парсинг временного html-файла"""
         soup = BeautifulSoup(self._temp_html, 'lxml')
 
@@ -214,7 +212,7 @@ class Parser:
             self.JOBS_DONE.append(temp)
         return self.JOBS_DONE
 
-    def write_csv(self, jobs_list: list) -> None:
+    def write_csv(self, jobs_list: List[list]) -> None:
         """Создать .csv из list()"""
 
         # Имя в формате вакансия_в_локация_текущая_дата
