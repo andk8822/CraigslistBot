@@ -99,7 +99,7 @@ class Scraper:
                                                          'div.jobsearch-JobCountAndSortPane-jobCount span').text
             total_vacancies = int(total_vacancies.split()[0])
             print(f'По запросу найдено вакансий: {total_vacancies}')
-            print('Начинаю сбор вакансий...')
+            print('Начинаю обход страниц...')
             return True
         except NoSuchElementException:  # Если блока вакансий нет
             print('Не удалось получить блок "Вакансии"')
