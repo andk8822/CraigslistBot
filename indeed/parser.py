@@ -75,8 +75,7 @@ class Parser:
 
         # Имя в формате количество_вакансия_в_локация_текущая_дата_время
         total_vacancies = str(len(jobs_list)-1)
-        now = datetime.now()
-        current_date_time = now.strftime('%Y-%m-%d-%H-%M')
+        current_date_time = datetime.now().strftime('%Y-%m-%d-%H-%M')
         file_name = f'{total_vacancies} {self._what} in {self._where} ({current_date_time}).csv'
 
         # Создание и запись .csv
