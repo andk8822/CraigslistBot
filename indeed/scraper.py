@@ -9,10 +9,10 @@ from selenium.common.exceptions import NoSuchElementException
 
 class Scraper:
     """Скрапинг вакансий в .html"""
-    def __init__(self, browser: webdriver, what: str, where: str, temp_html: IO) -> None:
+    def __init__(self, browser: webdriver, vacancy: str, location: str, temp_html: IO) -> None:
         self._browser = browser
-        self._what = what
-        self._where = where
+        self._vacancy = vacancy
+        self._location = location
         self._temp_html = temp_html
 
         self.go_to_site()
@@ -26,16 +26,16 @@ class Scraper:
     def go_to_site(self) -> None:
         """Перейти на сайт"""
         self._browser.get('https://ca.indeed.com/')
-        print(f'Начинаю поиск вакансий "{self._what}" в {self._where}')
+        print(f'Начинаю поиск вакансий "{self._vacancy}" в {self._location}')
 
     def input_search_parameters(self) -> None:
         """Ввести поисковые запросы и перейти к результатам"""
-        what_input = self._browser.find_element(By.CSS_SELECTOR, '#text-input-what')
-        what_input.send_keys(self._what)
+        vacancy_input = self._browser.find_element(By.CSS_SELECTOR, '#text-input-what')
+        vacancy_input.send_keys(self._vacancy)
         time.sleep(1)
 
-        where_input = self._browser.find_element(By.CSS_SELECTOR, '#text-input-where')
-        where_input.send_keys(self._where + Keys.ENTER)
+        location_input = self._browser.find_element(By.CSS_SELECTOR, '#text-input-where')
+        location_input.send_keys(self._location + Keys.ENTER)
         time.sleep(1)
 
     def search_result(self) -> bool:

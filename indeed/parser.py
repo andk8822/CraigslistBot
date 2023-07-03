@@ -9,9 +9,9 @@ class Parser:
     """Парсинг вакансий из .html в .csv"""
     JOBS_DONE: List[list] = [['#', 'Job title', 'Tag', 'Company', 'Rating', 'Url']]  # Шапка для создания .csv
 
-    def __init__(self, what: str, where: str, temp_html: IO) -> None:
-        self._what = what
-        self._where = where
+    def __init__(self, vacancy: str, location: str, temp_html: IO) -> None:
+        self._vacancy = vacancy
+        self._location = location
         self._temp_html = temp_html
 
         if self._temp_html:
@@ -75,8 +75,8 @@ class Parser:
 
         # Имя в формате количество_вакансия_в_локация_текущая_дата_время
         total_vacancies = str(len(jobs_list)-1)
-        current_date_time = datetime.now().strftime('%Y-%m-%d-%H-%M')
-        file_name = f'{total_vacancies} {self._what} in {self._where} ({current_date_time}).csv'
+        current_date_time = datetime.now().strftime('%Y-%m-%d at %H-%M')
+        file_name = f'{self._vacancy} in {self._location} - {total_vacancies} ({current_date_time}).csv'
 
         # Создание и запись .csv
         with open('./csv/' + file_name, mode='w', encoding='utf-8', newline='') as file:
