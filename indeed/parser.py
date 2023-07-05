@@ -5,6 +5,67 @@ from typing import List, IO
 from bs4 import BeautifulSoup
 
 
+class Vacancy:
+    _VACANCIES_HEADERS: List[list] = [['#', 'Job title', 'Tag', 'Company', 'Rating', 'Url']]  # Шапка для создания .csv
+
+    def __init__(self):
+        self.vacancies: List[list] = list()
+
+    def _parse_vacancy(self, vacancy_html: str) -> list:
+        """Разобрать вакансию в формате html на элементы списка."""
+        soup = BeautifulSoup(vacancy_html, 'lxml')
+        temp_vacancy_elements = list()
+
+        # Добавить порядковый номер вакансии
+        if self.vacancies[-1]:
+            temp_vacancy_elements.append(self.vacancies[-1][0] + 1)
+        else:
+            temp_vacancy_elements.append(1)
+
+        # Добавить должность
+        job_title = soup.find('h2').find('span').text
+        temp_vacancy_elements.append(job_title)
+
+        # Добавить тег если имеется
+        try:
+            temp_tag_elements = list()
+            tags = soup.find('div', class_='metadata').find_all(class_='attribute_snippet')
+            for tag in tags:
+                temp_tag_elements.append(tag.text)
+            if temp_tag_elements:
+                temp_vacancy_elements.append(*temp_tag_elements)
+            else:
+                temp_vacancy_elements.append('No tags')
+        finally:
+            pass
+
+        # Добавить компанию
+        company = soup.find('span', class_='companyName').text
+        temp_vacancy_elements.append(company)
+
+        # Добавить рейтинг indeed если имеется
+        try:
+            rating = soup.find('span', class_='ratingNumber').find('span').text
+            temp_vacancy_elements.append(rating)
+        except AttributeError:
+            temp_vacancy_elements.append('No rating')
+
+        # Добавить ссылку
+        url = 'https://ca.indeed.com' + soup.find('h2').find('a')['href']
+        temp_vacancy_elements.append(url)
+
+        return temp_vacancy_elements
+
+    def save_vacancy(self, vacancy_html: str) -> None:
+        """Добавить список с элементами вакансии в список с вакансиями."""
+        vacancy: list = self._parse_vacancy(vacancy_html)
+        self.vacancies.append(vacancy)
+
+    def get_csv(self) -> None:
+        """Создать .csv"""
+        pass
+
+
 class Parser:
     """Парсинг вакансий из .html в .csv"""
     JOBS_DONE: List[list] = [['#', 'Job title', 'Tag', 'Company', 'Rating', 'Url']]  # Шапка для создания .csv
