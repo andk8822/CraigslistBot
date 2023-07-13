@@ -1,5 +1,4 @@
 import time
-from typing import IO
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -7,36 +6,20 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
 
-# class Scraper:
-#     """Скрапинг вакансий в .html"""
-#     def __init__(self, browser: webdriver, vacancy: str, location: str, temp_html: IO) -> None:
-#         self._browser = browser
-#         self._vacancy = vacancy
-#         self._location = location
-#         self._temp_html = temp_html
-#
-#         self.go_to_site()
-#         self.input_search_parameters()
-#         if self.search_result():
-#             self.scrape()
-#             self._browser.quit()
-#         else:
-#             self._browser.quit()
-
 def go_to_site(browser: webdriver) -> None:
     """Перейти на сайт"""
     browser.get('https://ca.indeed.com/')
     # print(f'Начинаю поиск вакансий "{self._vacancy}" в {self._location}')
 
 
-def input_search_parameters(browser: webdriver, vacancy: str, location: str) -> None:
+def input_search_parameters(browser: webdriver, vacancy_name: str, location_name: str) -> None:
     """Ввести поисковые запросы и перейти к результатам поиска"""
     vacancy_input = browser.find_element(By.CSS_SELECTOR, '#text-input-what')
-    vacancy_input.send_keys(vacancy)
+    vacancy_input.send_keys(vacancy_name)
     time.sleep(1)
 
     location_input = browser.find_element(By.CSS_SELECTOR, '#text-input-where')
-    location_input.send_keys(location + Keys.ENTER)
+    location_input.send_keys(location_name + Keys.ENTER)
     time.sleep(1)
 
 
@@ -44,8 +27,8 @@ def search_result(browser: webdriver) -> bool:
     """Проверить результат выдачи"""
     try:  # Работа с блоком "Вакансии"
         total_vacancies = browser.find_element(By.CSS_SELECTOR,
-                                                     'div.jobsearch-JobCountAndSortPane-jobCount span').text
-        total_vacancies = int(total_vacancies.split()[0])
+                                               'div.jobsearch-JobCountAndSortPane-jobCount span').text
+        total_vacancies = total_vacancies.split()[0]
         print(f'По запросу найдено вакансий: {total_vacancies}')
         print('Начинаю обход страниц...')
         return True
@@ -53,14 +36,15 @@ def search_result(browser: webdriver) -> bool:
         print('Не удалось получить блок "Вакансии"')
         try:  # Работа с блоком "Нет результатов поиска"
             if browser.find_element(By.CSS_SELECTOR,
-                                          'div.jobsearch-NoResult-messageContainer').is_displayed():
+                                    'div.jobsearch-NoResult-messageContainer').is_displayed():
                 print('По данному запросу нет ни одной вакансии')
                 return False
         except NoSuchElementException:
             print('Не удалось получить блок "Нет результатов поиска"')
 
 
-def scrape(browser: webdriver) -> None:
+# Как протестировать данную функцию на файле html страницы?
+def scrape(browser: webdriver, vacancies: 'Vacancy') -> None:
     """Обойти все страницы поисковой выдачи и добавить вакансии в .html"""
     page_counter = 0  # Счетчик для отслеживания второй страницы выдачи с email рассылкой
 
@@ -76,12 +60,16 @@ def scrape(browser: webdriver) -> None:
                 print('Не найден блок с e-mail рассылкой')
 
         # Запись внутреннего HTML-кода объекта в .html файл
-        selenium_jobs_block = browser.find_element(By.CSS_SELECTOR, '#mosaic-jobResults ul')
-        selenium_jobs_list = selenium_jobs_block.find_elements(By.CSS_SELECTOR, 'li')
-        
-        for selenium_job in selenium_jobs_list:
-            html_job = selenium_job.get_attribute('innerHTML')
-            vacancies.parse_vacancy(html_job)
+        selenium_jobs_block = browser.find_element(By.CSS_SELECTOR, 'ul.jobsearch-ResultsList')
+        selenium_jobs_cards = selenium_jobs_block.find_elements(By.CSS_SELECTOR, 'div.cardOutline')
+
+        for selenium_job_card in selenium_jobs_cards:
+            html_job = selenium_job_card.get_attribute('innerHTML')
+            vacancies.save_vacancy(html_job)
+            # with open('./temp/ttt.html', mode='a', encoding='utf-8') as ttt:
+            #     ttt.write(f'START {c}\n')
+            #     ttt.write(html_job)
+            #     ttt.write(f'\nEND {c}\n')
         print(f'{page_counter}-я страница готова')
 
         # Перейти на следующую страницу
@@ -92,8 +80,3 @@ def scrape(browser: webdriver) -> None:
             break
 
     print('HTML файл готов')
-
-# def write_html(self, html_block: str) -> None:
-#     """Запись html-блока во временный файл"""
-#     self._temp_html.write(html_block)
-#     self._temp_html.write('\n')

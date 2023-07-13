@@ -2,38 +2,23 @@ import click
 
 from indeed.browser import Browser
 from indeed.scraper import *
+from indeed.parser import Vacancy
+from indeed.writer import write
 
 
 @click.command()
-@click.option('--vacancy', default='Barber', prompt='Введите вакансию', help='Поиск вакансии')
-@click.option('--location', default='Calgary', prompt='Введите локацию', help='Поиск локации')
-@click.option('--chromedriver_path', default='./chromedriver/', help='Папка с chromedriver')
-def run_indeed(vacancy: str, location: str, chromedriver_path: str) -> None:
-    """Создать csv-таблицу вакансий с сайта ca.indeed.com по заданным параметрам поиска"""
+@click.option('--vacancy_name', default='Barber', prompt='Введите вакансию:', help='Поиск вакансии', type=str)
+@click.option('--location_name', default='Calgary', prompt='Введите локацию:', help='Поиск локации', type=str)
+@click.option('--chromedriver_path', default='./chromedriver/', help='Папка с chromedriver', type=str)
+def run_indeed(vacancy_name: str, location_name: str, chromedriver_path: str) -> None:
     with Browser(chromedriver_path) as browser:
         go_to_site(browser)
-        input_search_parameters(browser, vacancy, location)
+        input_search_parameters(browser, vacancy_name, location_name)
         if search_result(browser):
-            scrape(browser)
-
-        """
-            Если нет объектов, в классе нет смысла. Выдержать SRP. Выдержать тесты.
-
-            with browser as browser:
-                go_to_site(browser)
-                input_search_params(browser, vacancy, location)
-                if search_result(browser):
-                    vacancies = Vacancy(vacancy, location)
-                    scrape(browser, vacancies)
-                    vacancies.get_csv()
-
-                class Vacancy:
-                    def __init__()
-                    def _parse()  # Тестируется при передаче html-блоков
-                    def _amount()
-                    def add_vacancy_html()
-                    def get_csv()
-            """
+            vacancies = Vacancy()
+            scrape(browser, vacancies)
+            vacancies_list = vacancies.get_vacancies
+            write(vacancies_list, vacancy_name, location_name)
 
 
 if __name__ == "__main__":
