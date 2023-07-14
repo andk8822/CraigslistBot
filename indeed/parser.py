@@ -18,24 +18,6 @@ class Vacancy:
         vacancy: List = self._parse_vacancy(vacancy_html)
         self.vacancies.append(vacancy)
 
-    # @click.command()
-    # @click.option('--sheet_name', default=None, prompt='Введите имя для таблицы:', help='Имя для таблицы')
-    # def get_csv(self, sheet_name: str) -> None:
-    #     """Создать .csv"""
-    #
-    #     # Задать имя
-    #     if sheet_name is None:
-    #         current_date_time = datetime.now().strftime('%Y-%m-%d at %H-%M')
-    #         sheet_name = f'{self._vacancy_name} in {self._location_name} - {len(self.vacancies)} ({current_date_time}).csv'
-    #
-    #     # Запись
-    #     with open('./csv/' + sheet_name, mode='w', encoding='utf-8', newline='') as sheet:
-    #         writer = csv.writer(sheet)
-    #
-    #         writer.writerow(self._VACANCIES_HEADERS)
-    #         for vacancy in self.vacancies:
-    #             writer.writerow(vacancy)
-
     def _parse_vacancy(self, vacancy_html: str) -> list:
         """Разобрать вакансию в формате html на элементы списка."""
         soup = BeautifulSoup(vacancy_html, 'lxml')
@@ -73,7 +55,7 @@ class Vacancy:
 
         # Добавить рейтинг indeed если имеется
         try:
-            rating = float(soup.find('span', class_='ratingNumber').find('span').text)
+            rating = soup.find('span', class_='ratingNumber').find('span').text
             temp_vacancy_elements.append(rating)
         except AttributeError:
             temp_vacancy_elements.append('No rating')

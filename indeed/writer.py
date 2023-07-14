@@ -4,15 +4,12 @@ from typing import List, Tuple
 
 import click
 
+from indeed.logger_settings import logger
+
 
 VACANCIES_HEADERS = ['#', 'Job title', 'Company', 'Tags', 'Indeed rating', 'Url']  # Заголовки вакансий.
 
 
-# @click.command()
-# @click.option('--vacancies_list', type=List[list])
-# @click.option('--vacancy_name', type=str)
-# @click.option('--location_name', type=str)
-# @click.option('--sheet_name', default=None, prompt='Введите имя для таблицы:', help='Имя для таблицы', type=str)
 def write(vacancies_list: List[list], vacancy_name: str, location_name: str) -> None:
     """Создать таблицу с вакансиями."""
 
@@ -31,3 +28,5 @@ def write(vacancies_list: List[list], vacancy_name: str, location_name: str) -> 
         writer.writerow(VACANCIES_HEADERS)
         for vacancy in vacancies_list:
             writer.writerow(vacancy)
+
+    logger.info('Таблица готова')
