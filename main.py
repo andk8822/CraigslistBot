@@ -13,6 +13,7 @@ from indeed.writer import write
 def run_indeed(vacancy_name: str, location_name: str, chromedriver_path: str) -> None:
     with Browser(chromedriver_path) as browser:
         go_to_site(browser)
+        # if not page_not_found_error(browser):
         input_search_parameters(browser, vacancy_name, location_name)
         if search_result(browser):
             vacancies = Vacancy()
