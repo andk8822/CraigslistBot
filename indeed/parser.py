@@ -52,13 +52,6 @@ class Vacancy:
         except AttributeError:
             temp_vacancy_elements.append('No tags')
 
-        # Добавить рейтинг indeed если имеется
-        try:
-            rating = soup.find('span', class_='ratingNumber').find('span').text
-            temp_vacancy_elements.append(rating)
-        except AttributeError:
-            temp_vacancy_elements.append('No rating')
-
         # Добавить ссылку
         url = 'https://ca.indeed.com' + soup.find('h2').find('a')['href']
         temp_vacancy_elements.append(url)

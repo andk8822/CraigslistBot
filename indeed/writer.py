@@ -1,13 +1,13 @@
 import csv
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
 
 import click
 
-from indeed.logger_settings import logger
+from logger.logger_settings import info_logger, debug_error_logger
 
 
-VACANCIES_HEADERS = ['#', 'Job title', 'Company', 'Tags', 'Indeed rating', 'Url']  # Заголовки вакансий.
+VACANCIES_HEADERS = ['#', 'Job title', 'Company', 'Tags', 'Url']  # Заголовки вакансий.
 
 
 def write(vacancies_list: List[list], vacancy_name: str, location_name: str) -> None:
@@ -29,4 +29,4 @@ def write(vacancies_list: List[list], vacancy_name: str, location_name: str) -> 
         for vacancy in vacancies_list:
             writer.writerow(vacancy)
 
-    logger.info('Таблица готова')
+    info_logger.info('Таблица готова')
