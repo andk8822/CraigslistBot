@@ -42,8 +42,11 @@ class Vacancy:
             tags_list = list()
             tags = soup.find_all('div', class_='attribute_snippet')
             for tag in tags:
-                tags_list.append(tag.text)
-
+                try:
+                    index_plus = tag.text.index('+')
+                    tags_list.append(tag.text[:index_plus])
+                except ValueError:
+                    tags_list.append(tag.text)
             if tags_list:
                 tags_str = '. '.join(str(i).strip().capitalize() for i in tags_list)
                 temp_vacancy_elements.append(tags_str)
