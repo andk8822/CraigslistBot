@@ -1,7 +1,7 @@
 import click
 
 from indeed.browser import Browser
-from indeed.scraper import *
+from indeed import scraper
 from indeed.parser import Vacancy
 from indeed.writer import write
 
@@ -12,14 +12,15 @@ from indeed.writer import write
 @click.option('--chromedriver_path', default='./chromedriver/', help='Папка с chromedriver', type=str)
 def run_indeed(vacancy_name: str, location_name: str, chromedriver_path: str) -> None:
     with Browser(chromedriver_path) as browser:
-        go_to_site(browser)
-        # if not page_not_found_error(browser):
-        input_search_parameters(browser, vacancy_name, location_name)
-        if search_result(browser):
-            vacancies = Vacancy()
-            scrape(browser, vacancies)
-            vacancies_list = vacancies.get_vacancies
-            write(vacancies_list, vacancy_name, location_name)
+        scraper.go_to_site(browser)  # Перейти на ca.indeed.com.
+        scraper.input_search_parameters(browser, vacancy_name, location_name)  # Ввести поисковые запросы.
+        if scraper.search_result(browser):  # Если есть вакансии.
+            vacancies = Vacancy()  # Объект класса "Вакансия".
+            scraper.scrape(browser, vacancies)  # Передача html-блоков вакансий и их обработка.
+            vacancies_list = vacancies.get_vacancies  # Получение обработанного списка вакансий.
+            write(vacancies_list, vacancy_name, location_name)  # Запись списка вакансий в csv-файл.
+        else:  # Если нет поисковых результатов.
+            pass
 
 
 if __name__ == "__main__":

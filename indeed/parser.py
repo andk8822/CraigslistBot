@@ -51,7 +51,6 @@ class Vacancy:
                 raise AttributeError
         except AttributeError:
             temp_vacancy_elements.append('No tags')
-        # Правильно я понимаю, что в строке с кодом `raise` произойдет переключение на блок except?
 
         # Добавить рейтинг indeed если имеется
         try:

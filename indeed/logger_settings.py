@@ -7,7 +7,7 @@ logger.setLevel(logging.DEBUG)
 
 # Создать обработчик для уровня DEBUG, задать его формат.
 debug_handler = logging.FileHandler('debug.log', mode='w')
-debug_handler.setLevel(logging.ERROR)
+debug_handler.setLevel(logging.DEBUG)
 debug_formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
 debug_handler.setFormatter(debug_formatter)
 

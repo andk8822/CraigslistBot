@@ -6,14 +6,14 @@ class Browser:
         self._chromedriver_path = chromedriver_path
 
     def __enter__(self):
-        # Первый этап обхода CloudFlare
+        # Первый этап обхода CloudFlare.
         options = webdriver.ChromeOptions()
         options.add_argument('--disable-blink-features=AutomationControlled')
 
-        # Создать браузер с опциями
+        # Создать браузер с опциями.
         self.browser = webdriver.Chrome(executable_path=self._chromedriver_path, options=options)
 
-        # Второй этап обхода CloudFlare. Удалить маркеры роботизированного ПО из браузера
+        # Второй этап обхода CloudFlare. Удалить маркеры роботизированного ПО из браузера.
         self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
             'source': """
                         delete window.cdc_adoQpoasnfa76pfcZLmcfl_Array;
@@ -24,7 +24,7 @@ class Browser:
                     """
         })
 
-        # Задать неявную задержку
+        # Задать неявную задержку.
         self.browser.implicitly_wait(5)
 
         return self.browser
