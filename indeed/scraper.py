@@ -13,6 +13,10 @@ def go_to_site(browser: webdriver) -> None:
     browser.get('https://ca.indeed.com/')
 
 
+def t():
+    print('hi')
+
+
 def page_refresh_decorator(number_of_attempts: int = 2):  # Callable[[Callable], Callable]
     """Декоратор для перезагрузки страницы при ошибке NoSuchElementException"""
 

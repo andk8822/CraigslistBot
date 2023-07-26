@@ -33,26 +33,26 @@ class Vacancy:
         job_title = soup.find('h2').find('span').text
         temp_vacancy_elements.append(job_title)
 
-        # Добавить компанию
+        # Добавить компанию.
         company = soup.find('span', class_='companyName').text
         temp_vacancy_elements.append(company)
 
-        # Добавить тег если имеется
+        # Добавить тег если имеется.
         try:
             tags_list = list()
             tags = soup.find_all('div', class_='attribute_snippet')
             for tag in tags:
-                try:
-                    index_plus = tag.text.index('+')
-                    tags_list.append(tag.text[:index_plus])
-                except ValueError:
-                    tags_list.append(tag.text)
+                tag_str = tag.text
+                if '+' in tag_str[-3:]:
+                    tags_list.append(tag_str[:tag_str.rfind('+')].rstrip())
+                else:
+                    tags_list.append(tag_str)
             if tags_list:
-                tags_str = '. '.join(str(i).strip().capitalize() for i in tags_list)
+                tags_str = '. '.join(str(i).strip().capitalize() for i in tags_list)  # Все теги в одну строку.
                 temp_vacancy_elements.append(tags_str)
-            else:  # Если список тегов пустой
+            else:
                 raise AttributeError
-        except AttributeError:
+        except AttributeError:  # Если нет блока тегов.
             temp_vacancy_elements.append('No tags')
 
         # Добавить ссылку
