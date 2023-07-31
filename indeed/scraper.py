@@ -20,6 +20,11 @@ class Scraper:
         """Получить список со списком вакансий."""
         return self._vacancies
 
+    @property
+    def get_page(self) -> int:
+        """Получить количество страниц"""
+        return self._page
+
     def _run(self) -> None:
         """Скрапинг вакансий."""
         self._scrape()
@@ -120,37 +125,3 @@ def search_result(browser: webdriver) -> bool:
                 return False
         except NoSuchElementException:
             info_logger.info('Проблемы с доступом к сайту. Не удалось получить блок "Нет результатов поиска"')
-
-
-# def scrape(browser: webdriver, vacancies: 'Vacancy') -> None:
-#     """Обойти все страницы поисковой выдачи и добавить вакансии в .html"""
-#     page_counter: int = 0  # Счетчик для отслеживания второй страницы выдачи с email рассылкой.
-#     info_logger.info('Начинаю обход страниц...')
-#
-#     while True:
-#         page_counter += 1
-#         time.sleep(2)
-#
-#         # Закрытие всплывающего окна с e-mail рассылкой (как правило, на второй странице поисковой выдачи).
-#         if page_counter == 2:
-#             try:
-#                 browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
-#                 info_logger.info('Закрытие окна e-mail рассылки')
-#             except NoSuchElementException:
-#                 debug_error_logger.debug('Не найден блок с e-mail рассылкой')
-#
-#         # Запись внутреннего HTML-кода объекта в html-файл.
-#         selenium_jobs_block = browser.find_element(By.CSS_SELECTOR, 'ul.jobsearch-ResultsList')
-#         selenium_jobs_cards = selenium_jobs_block.find_elements(By.CSS_SELECTOR, 'div.cardOutline')
-#
-#         for selenium_job_card in selenium_jobs_cards:
-#             html_job = selenium_job_card.get_attribute('innerHTML')
-#             vacancies.save_vacancy(html_job)
-#         info_logger.info(f'{page_counter}-я страница готова')
-#
-#         # Перейти на следующую страницу.
-#         try:
-#             browser.find_element(By.CSS_SELECTOR, 'nav[role="navigation"] div:last-child a').click()
-#         except NoSuchElementException:
-#             info_logger.info(f'Больше страниц нет')
-#             break

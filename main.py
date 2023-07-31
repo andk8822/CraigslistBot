@@ -15,21 +15,6 @@ def run_indeed(vacancy_name: str, location_name: str, chromedriver_path: str) ->
         scraper.go_to_site(browser)  # Перейти на ca.indeed.com.
         scraper.input_search_parameters(browser, vacancy_name, location_name)  # Ввести поисковые запросы.
         if scraper.search_result(browser):  # Если есть вакансии.
-            # vacancies = ParserVacancy()  # Объект класса "ParserVacancy".
-            #
-            # scraper.scrape(browser, vacancies)  # Передача html-блоков вакансий и их обработка.
-            # # scraper_vacancies_list = Сохранение html-блоков в список.
-            #
-            # # for v in svl:
-            # #    vacancies.save_vacancy
-            # # parser_vacancies_list = vacancies.get_vacancy
-            #
-            # # (vacancies.save_vacancy for v in svl)
-            # # parser_vacancies_list = vacancies.get_vacancy
-            #
-            # vacancies_list = vacancies.get_vacancies  # Получение обработанного списка вакансий.
-            # write(vacancies_list, vacancy_name, location_name)  # Запись списка вакансий в csv-файл.
-
             vacancies_list_with_htmls = scraper.Scraper(browser).get_vacancies  # Список с html из объекта Scraper.
             vacancies_parser_object = ParserVacancy()  # Объект Parser.
 
