@@ -8,13 +8,67 @@ from selenium.common.exceptions import NoSuchElementException
 from logger.logger_settings import info_logger, debug_error_logger
 
 
-def go_to_site(browser: webdriver) -> None:
+class Scraper:
+    def __init__(self, browser: webdriver):
+        self._browser = browser
+        self._vacancies: list = list()
+        self._page: int = 0
+        self._run()
+
+    @property
+    def get_vacancies(self) -> list:
+        """Получить список со списком вакансий."""
+        return self._vacancies
+
+    def _run(self) -> None:
+        """Скрапинг вакансий."""
+        self._scrape()
+
+    def _page_counter(self) -> int:
+        """Счетчик для отслеживания второй страницы выдачи с email рассылкой."""
+        self._page += 1
+        return self._page
+
+    def _close_email_window(self) -> None:
+        """Закрытие окна email-рассылки."""
+        if self._page == 2:
+            try:
+                self._browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
+                info_logger.info('Закрытие окна e-mail рассылки')
+            except NoSuchElementException:
+                debug_error_logger.debug('Не найден блок с e-mail рассылкой')
+
+    def _scrape(self):
+        """Скрапинг html-блоков на странице."""
+        while True:
+            self._page_counter()
+            time.sleep(2)
+            self._close_email_window()
+
+            selenium_jobs_block = self._browser.find_element(By.CSS_SELECTOR, 'ul.jobsearch-ResultsList')
+            selenium_jobs_cards = selenium_jobs_block.find_elements(By.CSS_SELECTOR, 'div.cardOutline')
+
+            for selenium_job_card in selenium_jobs_cards:
+                html_job = selenium_job_card.get_attribute('innerHTML')
+                self._vacancies.append(html_job)
+            info_logger.info(f'{self._page}-я страница готова')
+
+            if not self._go_to_next_page():
+                break
+
+    def _go_to_next_page(self) -> bool:
+        """Перейти на следующую страницу."""
+        try:
+            self._browser.find_element(By.CSS_SELECTOR, 'nav[role="navigation"] div:last-child a').click()
+            return True
+        except NoSuchElementException:
+            info_logger.info(f'Больше страниц нет')
+            return False
+
+
+def go_to_site(browser: webdriver, url: str = 'https://ca.indeed.com/') -> None:
     """Перейти на сайт"""
-    browser.get('https://ca.indeed.com/')
-
-
-def t():
-    print('hi')
+    browser.get(url)
 
 
 def page_refresh_decorator(number_of_attempts: int = 2):  # Callable[[Callable], Callable]
@@ -56,7 +110,6 @@ def search_result(browser: webdriver) -> bool:
                                                'div.jobsearch-JobCountAndSortPane-jobCount span').text
         total_vacancies = total_vacancies.split()[0]
         info_logger.info(f'По запросу найдено вакансий: {total_vacancies}')
-        info_logger.info('Начинаю обход страниц...')
         return True
     except NoSuchElementException:  # Если блока "Вакансии" нет.
         info_logger.info('Не удалось получить блок "Вакансии"')
@@ -66,37 +119,38 @@ def search_result(browser: webdriver) -> bool:
                 info_logger.info('По данному запросу нет ни одной вакансии')
                 return False
         except NoSuchElementException:
-            info_logger.info('Не удалось получить блок "Нет результатов поиска"')
+            info_logger.info('Проблемы с доступом к сайту. Не удалось получить блок "Нет результатов поиска"')
 
 
-def scrape(browser: webdriver, vacancies: 'Vacancy') -> None:
-    """Обойти все страницы поисковой выдачи и добавить вакансии в .html"""
-    page_counter = 0  # Счетчик для отслеживания второй страницы выдачи с email рассылкой.
-
-    while True:
-        page_counter += 1
-        time.sleep(2)
-
-        # Закрытие всплывающего окна с e-mail рассылкой (как правило, на второй странице поисковой выдачи).
-        if page_counter == 2:
-            try:
-                browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
-                info_logger.info('Закрытие окна e-mail рассылки')
-            except NoSuchElementException:
-                debug_error_logger.debug('Не найден блок с e-mail рассылкой')
-
-        # Запись внутреннего HTML-кода объекта в html-файл.
-        selenium_jobs_block = browser.find_element(By.CSS_SELECTOR, 'ul.jobsearch-ResultsList')
-        selenium_jobs_cards = selenium_jobs_block.find_elements(By.CSS_SELECTOR, 'div.cardOutline')
-
-        for selenium_job_card in selenium_jobs_cards:
-            html_job = selenium_job_card.get_attribute('innerHTML')
-            vacancies.save_vacancy(html_job)
-        info_logger.info(f'{page_counter}-я страница готова')
-
-        # Перейти на следующую страницу.
-        try:
-            browser.find_element(By.CSS_SELECTOR, 'nav[role="navigation"] div:last-child a').click()
-        except NoSuchElementException:
-            info_logger.info(f'Больше страниц нет')
-            break
+# def scrape(browser: webdriver, vacancies: 'Vacancy') -> None:
+#     """Обойти все страницы поисковой выдачи и добавить вакансии в .html"""
+#     page_counter: int = 0  # Счетчик для отслеживания второй страницы выдачи с email рассылкой.
+#     info_logger.info('Начинаю обход страниц...')
+#
+#     while True:
+#         page_counter += 1
+#         time.sleep(2)
+#
+#         # Закрытие всплывающего окна с e-mail рассылкой (как правило, на второй странице поисковой выдачи).
+#         if page_counter == 2:
+#             try:
+#                 browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
+#                 info_logger.info('Закрытие окна e-mail рассылки')
+#             except NoSuchElementException:
+#                 debug_error_logger.debug('Не найден блок с e-mail рассылкой')
+#
+#         # Запись внутреннего HTML-кода объекта в html-файл.
+#         selenium_jobs_block = browser.find_element(By.CSS_SELECTOR, 'ul.jobsearch-ResultsList')
+#         selenium_jobs_cards = selenium_jobs_block.find_elements(By.CSS_SELECTOR, 'div.cardOutline')
+#
+#         for selenium_job_card in selenium_jobs_cards:
+#             html_job = selenium_job_card.get_attribute('innerHTML')
+#             vacancies.save_vacancy(html_job)
+#         info_logger.info(f'{page_counter}-я страница готова')
+#
+#         # Перейти на следующую страницу.
+#         try:
+#             browser.find_element(By.CSS_SELECTOR, 'nav[role="navigation"] div:last-child a').click()
+#         except NoSuchElementException:
+#             info_logger.info(f'Больше страниц нет')
+#             break

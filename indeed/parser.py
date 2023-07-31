@@ -1,9 +1,9 @@
-from typing import List, Tuple
+from typing import List
 
 from bs4 import BeautifulSoup
 
 
-class Vacancy:
+class ParserVacancy:
 
     def __init__(self):
         self.vacancies: List[list] = list()
