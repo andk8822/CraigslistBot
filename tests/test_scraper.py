@@ -1,3 +1,4 @@
+"""Все функции, представленные в данном файле зависят друг от друга и требуют соблюдения определенной очередности."""
 from selenium.webdriver.common.by import By
 
 from indeed import scraper

@@ -1,8 +1,10 @@
+import json
+
 import click
 
 from indeed.browser import Browser
 from indeed import scraper
-from indeed.parser import ParserVacancy
+from indeed.parser import Parser
 from indeed.writer import write
 
 
@@ -16,14 +18,19 @@ def run_indeed(vacancy_name: str, location_name: str, chromedriver_path: str) ->
         scraper.input_search_parameters(browser, vacancy_name, location_name)  # Ввести поисковые запросы.
         if scraper.search_result(browser):  # Если есть вакансии.
             vacancies_list_with_htmls = scraper.Scraper(browser).get_vacancies  # Список с html из объекта Scraper.
-            vacancies_parser_object = ParserVacancy()  # Объект Parser.
+            vacancies_parser_object = Parser()  # Объект Parser.
 
             # Передать html элементы списка в объект Parser для парсинга.
             for vacancy_html in vacancies_list_with_htmls:
-                vacancies_parser_object.save_vacancy(vacancy_html)
+                vacancies_parser_object.parse_n_save(vacancy_html)
 
             vacancies_list_with_lists = vacancies_parser_object.get_vacancies  # Список списков объекта Parser.
-            write(vacancies_list_with_lists, vacancy_name, location_name)  # Записать список списков в таблицу.
+
+            # Запрос имени таблицы от пользователя
+            sheet_name = click.prompt('Введите имя для таблицы, или нажмите "Enter"', default='')
+
+            # Записать список списков в таблицу.
+            write(vacancies_list_with_lists, vacancy_name, location_name, sheet_name)
         else:  # Если нет поисковых результатов.
             pass
 

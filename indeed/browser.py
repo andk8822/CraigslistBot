@@ -25,7 +25,7 @@ class Browser:
         })
 
         # Задать неявную задержку.
-        self.browser.implicitly_wait(5)
+        self.browser.implicitly_wait(2)
 
         return self.browser
 

@@ -34,6 +34,16 @@ class Scraper:
         self._page += 1
         return self._page
 
+    def _close_authorization_via_services_window(self) -> None:
+        """Закрытие окна авторизации через сервисы Google & Apple"""
+        if self._page == 2:
+            try:
+                self._browser.find_element(By.CSS_SELECTOR, 'button[id="passport-modal-overlay-social-onetap-modal-close'
+                                                            '-button"').click()
+                info_logger.info('Закрытие окна "Авторизация с помощью сервисов"')
+            except NoSuchElementException:
+                debug_error_logger.debug('Не найдено окно "Авторизация с помощью сервисов"')
+
     def _close_email_window(self) -> None:
         """Закрытие окна email-рассылки."""
         if self._page == 2:
@@ -41,13 +51,14 @@ class Scraper:
                 self._browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
                 info_logger.info('Закрытие окна e-mail рассылки')
             except NoSuchElementException:
-                debug_error_logger.debug('Не найден блок с e-mail рассылкой')
+                debug_error_logger.debug('Не найдено окно с e-mail рассылкой')
 
     def _scrape(self):
         """Скрапинг html-блоков на странице."""
         while True:
             self._page_counter()
             time.sleep(2)
+            self._close_authorization_via_services_window()
             self._close_email_window()
 
             selenium_jobs_block = self._browser.find_element(By.CSS_SELECTOR, 'ul.jobsearch-ResultsList')

@@ -3,7 +3,7 @@ from typing import List
 from bs4 import BeautifulSoup
 
 
-class ParserVacancy:
+class Parser:
 
     def __init__(self):
         self.vacancies: List[list] = list()
@@ -13,13 +13,8 @@ class ParserVacancy:
         """Получить список со списком вакансий."""
         return self.vacancies
 
-    def save_vacancy(self, vacancy_html: str) -> None:
+    def parse_n_save(self, vacancy_html: str) -> None:
         """Добавить список с элементами вакансии в список с вакансиями."""
-        vacancy: List = self._parse_vacancy(vacancy_html)
-        self.vacancies.append(vacancy)
-
-    def _parse_vacancy(self, vacancy_html: str) -> list:
-        """Разобрать вакансию в формате html на элементы списка."""
         soup = BeautifulSoup(vacancy_html, 'lxml')
         temp_vacancy_elements = list()
 
@@ -59,4 +54,4 @@ class ParserVacancy:
         url = 'https://ca.indeed.com' + soup.find('h2').find('a')['href']
         temp_vacancy_elements.append(url)
 
-        return temp_vacancy_elements
+        self.vacancies.append(temp_vacancy_elements)
