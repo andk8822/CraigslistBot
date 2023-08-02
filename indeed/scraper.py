@@ -42,7 +42,7 @@ class Scraper:
                                                             '-button"').click()
                 info_logger.info('Закрытие окна "Авторизация с помощью сервисов"')
             except NoSuchElementException:
-                debug_error_logger.debug('Не найдено окно "Авторизация с помощью сервисов"')
+                info_logger.info('Не найдено окно "Авторизация с помощью сервисов"')
 
     def _close_email_window(self) -> None:
         """Закрытие окна email-рассылки."""
@@ -51,7 +51,7 @@ class Scraper:
                 self._browser.find_element(By.CSS_SELECTOR, 'button[aria-label="close"]').click()
                 info_logger.info('Закрытие окна e-mail рассылки')
             except NoSuchElementException:
-                debug_error_logger.debug('Не найдено окно с e-mail рассылкой')
+                info_logger.info('Не найдено окно с e-mail рассылкой')
 
     def _scrape(self):
         """Скрапинг html-блоков на странице."""
