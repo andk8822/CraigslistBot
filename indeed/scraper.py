@@ -119,7 +119,7 @@ def input_search_parameters(browser: webdriver, vacancy_name: str, location_name
     info_logger.info(f'Начинаю поиск вакансий "{vacancy_name}" в {location_name}')
 
 
-def search_result(browser: webdriver) -> bool:
+def check_result(browser: webdriver) -> bool:
     """Проверить результат выдачи"""
     try:  # Работа с блоком "Вакансии".
         total_vacancies = browser.find_element(By.CSS_SELECTOR,
