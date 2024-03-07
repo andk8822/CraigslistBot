@@ -1,28 +1,28 @@
 # Indeed parser
 
 ---
-### Описание
-Данный проект собирает все вакансии начиная с самой свежей по указанному запросу
-в требуемой локации внутри Канады с сайта [ca.indeed.com](https://ca.indeed.com) и
-помещает результат в csv таблицу. В таблице вакансия распределяется по столбцам:
-порядковый номер вакансии, ее название, тег (если есть), название компании,
-ее рейтинг от ca.indeed.com (если есть), ссылка на вакансию.
+### Description
+This project collects all job openings starting with the most recent one for a given request
+in the required location within Canada from [ca.indeed.com](https://ca.indeed.com) and
+puts the result into a csv table. The table categorizes the vacancy into columns:
+job sequence number, job title, tag (if any), company name,
+its rating from ca.indeed.com (if any), link to the vacancy.
 
-### Установка и настройка
-Установите проект, создайте и активируйте виртуальное окружение,
-установите все требуемые зависимости из файла `requirements.txt`
-установите браузер Google Chrome на ваш ПК (если его еще нет),
-[скачайте](https://chromedriver.chromium.org/downloads) `cromedriver.exe` который
-соответствует версии вашего Google Chrome и поместить его в папку "./cromedriver"
-внутри проекта.
+### Installation
+Install the project, create and activate the virtual environment,
+install all required dependencies from the `requirements.txt` file
+install Google Chrome browser on your PC (if you don't already have it),
+[download](https://chromedriver.chromium.org/downloads) `cromedriver.exe` which
+matches the version of your Google Chrome and place it in the folder "./cromedriver"
+inside the project.
 
-### Использование
-В консоли запустите `main.py` и следуя подсказкам введите поисковые запросы.
-После того как программа отработает внутри проекта в каталоге "./csv"
-появится csv-файл с именем "количество_вакансий вакансия in локация (гггг-мм-дд-чч-мин)".
-В таблице с результатами вакансий может быть меньше чем заявляет сам ca.indeed.com
-так как он же и не отображает дубли в поисковой выдаче.
+### Usage
+In the console, run `main.py` and follow the prompts to enter search terms.
+After the program exit, a csv file wi;; be created with the name "number_vacancies vacancy in location (yyyy-mm-dd-hh-mmm)".
+a csv file with the name "number_vacancies vacancy vacancy in location (yyyyyy-mm-dd-dd-hh-min)" will appear in the "./csv" directory.
+There may be fewer vacancies in the table with results than ca.indeed.com itself states
+as it does not show duplicates in the search results.
 
-### Автор
-Андрей Калинкин  
-email: andk.8822@gmail.com
+### Author
+Andrii Kalinkin
+email: andriikalinkin@gmail.com
